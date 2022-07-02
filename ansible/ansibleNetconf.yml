@@ -1,0 +1,75 @@
+---
+- name: Get config
+  hosts: lab_netconf
+
+  tasks:
+    # Cek ALL Interface
+    - name: print running filter
+      netconf_get:
+        source: running
+        display: xml
+        filter: <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+          <interface></interface>
+          </native>
+      register: config_out
+    - debug:
+        var: config_out["output"]
+
+    # Cek filter Loopback
+    - name: print filter Loopback
+      netconf_get:
+        source: running
+        display: xml
+        filter: <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+          <interface><Loopback></Loopback></interface>
+          </native>
+      register: config_loop
+    - debug:
+        var: config_loop["output"]
+
+    # Cek filter Username
+    - name: print filter Username
+      netconf_get:
+        source: running
+        display: xml
+        filter: <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+          <username></username>
+          </native>
+      register: config_user
+    - debug:
+        var: config_user["output"]
+
+    # Cek Filter Gigabit
+    - name: print filter GigabitEthernet
+      netconf_get:
+        source: running
+        display: xml
+        filter: <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+          <interface><GigabitEthernet></GigabitEthernet></interface>
+          </native>
+
+    # ADD LoopBack
+
+    - name: ADD LOOPBACK
+      netconf_config:
+        content: |
+          <config>
+            <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+              <interface>
+                <Loopback>
+                  <name xmlns:nc='urn:ietf:params:xml:ns:netconf:base:1.0'>
+                    278
+                  </name>
+                  <description>Cobain</description>
+                  <ip>
+                    <address>
+                      <primary>
+                        <address>100.200.20.100</address>
+                        <mask>255.255.255.0</mask>
+                      </primary>
+                    </address>
+                  </ip>
+                </Loopback>
+              </interface>
+            </native>
+          </config>
